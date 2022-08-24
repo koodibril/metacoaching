@@ -1,0 +1,30 @@
+version: '2'
+services:
+  database:
+    image: postgres
+    container_name: postgres
+    volumes:
+      - ./databases/postgres:/var/lib/postgresql/data
+      - ./api/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+    ports:
+      - 5432:5432
+  backend:
+    build: ./api/
+    container_name: backend
+    environment:
+      - POSTGRES_ADDRESS=database
+      - POSTGRES_PORT=5432
+      - POSTGRES_LOGIN=postgres
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DATABASE=postgres
+      - PORT=3001
+    ports:
+      - 3001:3001
+  frontend:
+    build: ./app/
+    container_name: frontend
+    ports:
+      - 3000:3000
